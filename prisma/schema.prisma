@@ -1,0 +1,201 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// User model for NextAuth
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  role          String    @default("admin")
+  accounts      Account[]
+  sessions      Session[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// Profile Model - Personal Information
+model Profile {
+  id              String   @id @default(cuid())
+  name            String
+  title           String
+  heroSubtitle    String?
+  bioShort        String?
+  bioLong         String?
+  location        String?
+  email           String?
+  phone           String?
+  whatsapp        String?
+  availability    String   @default("Available")
+  profileImage    String?
+  resumeUrl       String?
+  heroImage       String?
+  tagline         String?
+  yearsExperience Int      @default(0)
+  projectsCount   Int      @default(0)
+  clientsCount    Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+// Skills Model
+model Skill {
+  id        String   @id @default(cuid())
+  name      String
+  category  String   // frontend, backend, tools, design, devops
+  level     Int      @default(80) // 0-100
+  icon      String?
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Services Model
+model Service {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  icon        String?
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Projects Model
+model Project {
+  id               String   @id @default(cuid())
+  title            String
+  slug             String   @unique
+  shortDescription String?
+  fullDescription  String?
+  thumbnail        String?
+  gallery          String?  // JSON array of image URLs
+  tags             String?  // JSON array of tech stack
+  category         String?
+  featured         Boolean  @default(false)
+  liveUrl          String?
+  githubUrl        String?
+  videoUrl         String?
+  status           String   @default("completed") // completed, in-progress
+  published        Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+// Blog Posts Model
+model Post {
+  id         String   @id @default(cuid())
+  title      String
+  slug       String   @unique
+  excerpt    String?
+  content    String?
+  coverImage String?
+  tags       String?  // JSON array of tags
+  published  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+// Media Links Model (Videos, Tutorials)
+model MediaLink {
+  id          String   @id @default(cuid())
+  title       String
+  type        String   // youtube, vimeo, facebook, instagram, tiktok, link
+  url         String
+  thumbnail   String?
+  description String?
+  order       Int      @default(0)
+  published   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Social Links Model
+model SocialLink {
+  id        String   @id @default(cuid())
+  platform  String   // github, linkedin, twitter, facebook, instagram, youtube, etc.
+  url       String
+  icon      String?
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Files/Documents Model
+model FileItem {
+  id          String   @id @default(cuid())
+  title       String
+  fileUrl     String
+  type        String   // pdf, doc, image, etc.
+  category    String?
+  description String?
+  published   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Contact Messages Model
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  subject   String?
+  message   String?
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+// Site Settings Model
+model Setting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
