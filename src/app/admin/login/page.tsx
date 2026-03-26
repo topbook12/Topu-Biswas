@@ -43,6 +43,10 @@ export default function AdminLoginPage() {
     setIsLoading(true);
 
     try {
+      // First, clear any existing session cookies
+      await fetch('/api/clear-session', { method: 'POST' });
+
+      // Then sign in with new credentials
       const result = await signIn('credentials', {
         email: data.email,
         password: data.password,

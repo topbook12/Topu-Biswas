@@ -43,42 +43,44 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
+/* Light Theme - Default */
 :root {
   --radius: 0.625rem;
-  --background: #0B1120;
-  --foreground: #E5E7EB;
-  --card: #172033;
-  --card-foreground: #E5E7EB;
-  --popover: #172033;
-  --popover-foreground: #E5E7EB;
+  --background: #FAFBFC;
+  --foreground: #1A202C;
+  --card: #FFFFFF;
+  --card-foreground: #1A202C;
+  --popover: #FFFFFF;
+  --popover-foreground: #1A202C;
   --primary: #7C3AED;
   --primary-foreground: #ffffff;
   --secondary: #06B6D4;
   --secondary-foreground: #ffffff;
-  --muted: #1E293B;
-  --muted-foreground: #94A3B8;
-  --accent: #3B82F6;
+  --muted: #F1F5F9;
+  --muted-foreground: #64748B;
+  --accent: #8B5CF6;
   --accent-foreground: #ffffff;
   --destructive: #EF4444;
   --destructive-foreground: #ffffff;
-  --border: rgba(255, 255, 255, 0.1);
-  --input: rgba(255, 255, 255, 0.1);
+  --border: rgba(0, 0, 0, 0.1);
+  --input: rgba(0, 0, 0, 0.08);
   --ring: #7C3AED;
   --chart-1: #7C3AED;
   --chart-2: #06B6D4;
   --chart-3: #3B82F6;
   --chart-4: #8B5CF6;
   --chart-5: #14B8A6;
-  --sidebar: #0F172A;
-  --sidebar-foreground: #E5E7EB;
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #1A202C;
   --sidebar-primary: #7C3AED;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #1E293B;
-  --sidebar-accent-foreground: #E5E7EB;
-  --sidebar-border: rgba(255, 255, 255, 0.1);
+  --sidebar-accent: #F1F5F9;
+  --sidebar-accent-foreground: #1A202C;
+  --sidebar-border: rgba(0, 0, 0, 0.1);
   --sidebar-ring: #7C3AED;
 }
 
+/* Dark Theme */
 .dark {
   --background: #0B1120;
   --foreground: #E5E7EB;
@@ -143,7 +145,7 @@
   background: var(--secondary);
 }
 
-/* Glassmorphism utilities */
+/* Glassmorphism utilities - Dark */
 .glass {
   background: rgba(23, 32, 51, 0.7);
   backdrop-filter: blur(12px);
@@ -151,11 +153,22 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+/* Glassmorphism - Light */
+:root:not(.dark) .glass {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
 .glass-light {
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+:root:not(.dark) .glass-light {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 /* Gradient text */
@@ -191,9 +204,16 @@
                0 0 40px rgba(124, 58, 237, 0.3);
 }
 
-/* Animated gradient background */
-.animated-gradient {
+/* Animated gradient background - Dark */
+.dark .animated-gradient {
   background: linear-gradient(-45deg, #0B1120, #1E1B4B, #0F172A, #172033);
+  background-size: 400% 400%;
+  animation: gradientBG 15s ease infinite;
+}
+
+/* Animated gradient background - Light */
+:root:not(.dark) .animated-gradient {
+  background: linear-gradient(-45deg, #FAFBFC, #F1F5F9, #E2E8F0, #F8FAFC);
   background-size: 400% 400%;
   animation: gradientBG 15s ease infinite;
 }
@@ -234,10 +254,16 @@
   transition: all 0.3s ease;
 }
 
-.card-hover:hover {
+.dark .card-hover:hover {
   transform: translateY(-5px);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3),
               0 0 40px rgba(124, 58, 237, 0.1);
+}
+
+:root:not(.dark) .card-hover:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1),
+              0 0 40px rgba(124, 58, 237, 0.15);
 }
 
 /* Section padding */
@@ -250,8 +276,8 @@
   @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
 }
 
-/* Noise texture overlay */
-.noise-overlay::before {
+/* Noise texture overlay - Dark */
+.dark .noise-overlay::before {
   content: '';
   position: absolute;
   top: 0;
@@ -260,6 +286,20 @@
   height: 100%;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
   opacity: 0.03;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Noise texture overlay - Light */
+:root:not(.dark) .noise-overlay::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  opacity: 0.015;
   pointer-events: none;
   z-index: 1;
 }
@@ -333,4 +373,13 @@
   );
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
+}
+
+/* Theme transition */
+html {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body {
+  transition: background-color 0.3s ease, color 0.3s ease;
 }

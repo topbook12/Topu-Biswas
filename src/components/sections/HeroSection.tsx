@@ -78,7 +78,7 @@ export default function HeroSection() {
       <div className="absolute bottom-20 right-10 w-96 h-96 bg-cyan-600/20 rounded-full filter blur-[120px] animate-pulse" />
 
       <div className="container-custom relative z-10 py-12 md:py-0">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center min-h-[80vh]">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-4 items-center min-h-[80vh]">
           
           {/* Text Content - Left Side */}
           <motion.div
@@ -188,7 +188,7 @@ export default function HeroSection() {
 
           {/* 3D Canvas - Right Side */}
           <motion.div
-            className="order-1 lg:order-2 w-full h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px] relative"
+            className="order-1 lg:order-2 w-full h-[350px] sm:h-[450px] md:h-[550px] lg:h-[650px] relative overflow-visible"
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.3 }}
@@ -198,9 +198,9 @@ export default function HeroSection() {
             </Suspense>
 
             {/* Decorative ring around 3D area */}
-            <div className="absolute inset-0 pointer-events-none">
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[280px] h-[280px] sm:w-[380px] sm:h-[380px] md:w-[480px] md:h-[480px] rounded-full border border-purple-500/10 animate-[spin-slow_30s_linear_infinite]" />
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[320px] h-[320px] sm:w-[420px] sm:h-[420px] md:w-[520px] md:h-[520px] rounded-full border border-cyan-500/10 animate-[spin-slow_20s_linear_infinite_reverse]" />
+            <div className="absolute inset-0 pointer-events-none overflow-visible">
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[320px] h-[320px] sm:w-[420px] sm:h-[420px] md:w-[520px] md:h-[520px] lg:w-[420px] lg:h-[420px] rounded-full border border-purple-500/10 animate-[spin_30s_linear_infinite]" />
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[360px] h-[360px] sm:w-[460px] sm:h-[460px] md:w-[560px] md:h-[560px] lg:w-[460px] lg:h-[460px] rounded-full border border-cyan-500/10 animate-[spin_20s_linear_infinite_reverse]" />
             </div>
           </motion.div>
         </div>

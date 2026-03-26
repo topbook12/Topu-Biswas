@@ -8,6 +8,8 @@ import * as THREE from 'three';
 function OrbMesh({ isMobile = false }: { isMobile?: boolean }) {
   const meshRef = useRef<THREE.Mesh>(null);
   const glowRef = useRef<THREE.Mesh>(null);
+  const ringRef = useRef<THREE.Mesh>(null);
+  const ring2Ref = useRef<THREE.Mesh>(null);
 
   // Create gradient material colors
   const colors = useMemo(() => ({
@@ -16,68 +18,96 @@ function OrbMesh({ isMobile = false }: { isMobile?: boolean }) {
   }), []);
 
   useFrame((state) => {
+    const time = state.clock.elapsedTime;
+    
     if (meshRef.current) {
       // Subtle rotation
-      meshRef.current.rotation.x = state.clock.elapsedTime * 0.1;
-      meshRef.current.rotation.y = state.clock.elapsedTime * 0.15;
+      meshRef.current.rotation.x = time * 0.15;
+      meshRef.current.rotation.y = time * 0.2;
     }
     if (glowRef.current) {
       // Pulsing glow effect
-      const scale = 1.2 + Math.sin(state.clock.elapsedTime * 2) * 0.05;
+      const scale = 1.15 + Math.sin(time * 2) * 0.05;
       glowRef.current.scale.set(scale, scale, scale);
+    }
+    if (ringRef.current) {
+      ringRef.current.rotation.z = time * 0.3;
+    }
+    if (ring2Ref.current) {
+      ring2Ref.current.rotation.z = -time * 0.2;
     }
   });
 
+  const baseScale = isMobile ? 0.9 : 1.2;
+
   return (
     <Float
-      speed={isMobile ? 1 : 2}
-      rotationIntensity={isMobile ? 0.2 : 0.5}
-      floatIntensity={isMobile ? 0.5 : 1}
+      speed={isMobile ? 0.8 : 1.5}
+      rotationIntensity={isMobile ? 0.1 : 0.3}
+      floatIntensity={isMobile ? 0.3 : 0.6}
     >
-      <group>
-        {/* Main orb */}
-        <mesh ref={meshRef} scale={isMobile ? 1.2 : 1.8}>
-          <icosahedronGeometry args={[1, 4]} />
+      <group scale={baseScale}>
+        {/* Outer glow - very subtle */}
+        <mesh ref={glowRef} scale={1.8}>
+          <sphereGeometry args={[1, 32, 32]} />
+          <meshBasicMaterial
+            color={colors.primary}
+            transparent
+            opacity={0.08}
+          />
+        </mesh>
+
+        {/* Main orb with distortion */}
+        <mesh ref={meshRef} scale={1}>
+          <icosahedronGeometry args={[1, 5]} />
           <MeshDistortMaterial
             color={colors.primary}
             attach="material"
-            distort={isMobile ? 0.2 : 0.4}
-            speed={isMobile ? 1 : 2}
-            roughness={0.2}
-            metalness={0.8}
+            distort={isMobile ? 0.15 : 0.3}
+            speed={isMobile ? 1.5 : 2.5}
+            roughness={0.1}
+            metalness={0.9}
           />
         </mesh>
 
         {/* Inner glow sphere */}
-        <mesh scale={isMobile ? 1.3 : 2}>
+        <mesh scale={1.05}>
           <sphereGeometry args={[1, 32, 32]} />
           <meshBasicMaterial
             color={colors.secondary}
             transparent
-            opacity={0.1}
+            opacity={0.15}
           />
         </mesh>
 
-        {/* Outer glow */}
-        <mesh ref={glowRef} scale={isMobile ? 1.5 : 2.2}>
-          <sphereGeometry args={[1, 32, 32]} />
-          <meshBasicMaterial
-            color={colors.primary}
-            transparent
-            opacity={0.05}
-          />
-        </mesh>
-
-        {/* Ring around orb */}
-        <mesh rotation={[Math.PI / 2, 0, 0]} scale={isMobile ? 1.5 : 2.2}>
-          <torusGeometry args={[1, 0.02, 16, 100]} />
-          <meshBasicMaterial color={colors.secondary} transparent opacity={0.6} />
-        </mesh>
-
-        {/* Second ring */}
-        <mesh rotation={[Math.PI / 3, Math.PI / 4, 0]} scale={isMobile ? 1.4 : 2}>
+        {/* Primary ring - horizontal */}
+        <mesh ref={ringRef} rotation={[Math.PI / 2, 0, 0]} scale={1.5}>
           <torusGeometry args={[1, 0.015, 16, 100]} />
-          <meshBasicMaterial color={colors.primary} transparent opacity={0.4} />
+          <meshBasicMaterial 
+            color={colors.secondary} 
+            transparent 
+            opacity={0.7} 
+          />
+        </mesh>
+
+        {/* Secondary ring - angled */}
+        <mesh ref={ring2Ref} rotation={[Math.PI / 3, Math.PI / 4, 0]} scale={1.4}>
+          <torusGeometry args={[1, 0.01, 16, 100]} />
+          <meshBasicMaterial 
+            color={colors.primary} 
+            transparent 
+            opacity={0.5} 
+          />
+        </mesh>
+
+        {/* Third ring - different angle */}
+        <mesh rotation={[Math.PI / 4, -Math.PI / 3, 0]} scale={1.6}>
+          <torusGeometry args={[1, 0.008, 16, 100]} />
+          <meshBasicMaterial 
+            color={colors.secondary} 
+            transparent 
+            opacity={0.3} 
+          />
         </mesh>
       </group>
     </Float>
@@ -85,22 +115,23 @@ function OrbMesh({ isMobile = false }: { isMobile?: boolean }) {
 }
 
 // Particle field for depth
-function Particles({ count = 100, isMobile = false }: { count?: number; isMobile?: boolean }) {
+function Particles({ count = 60, isMobile = false }: { count?: number; isMobile?: boolean }) {
   const particlesRef = useRef<THREE.Points>(null);
   
   const particles = useMemo(() => {
     const positions = new Float32Array(count * 3);
     for (let i = 0; i < count; i++) {
-      positions[i * 3] = (Math.random() - 0.5) * 10;
-      positions[i * 3 + 1] = (Math.random() - 0.5) * 10;
-      positions[i * 3 + 2] = (Math.random() - 0.5) * 10;
+      positions[i * 3] = (Math.random() - 0.5) * 12;
+      positions[i * 3 + 1] = (Math.random() - 0.5) * 12;
+      positions[i * 3 + 2] = (Math.random() - 0.5) * 8;
     }
     return positions;
   }, [count]);
 
   useFrame((state) => {
     if (particlesRef.current) {
-      particlesRef.current.rotation.y = state.clock.elapsedTime * 0.02;
+      particlesRef.current.rotation.y = state.clock.elapsedTime * 0.015;
+      particlesRef.current.rotation.x = state.clock.elapsedTime * 0.01;
     }
   });
 
@@ -115,10 +146,10 @@ function Particles({ count = 100, isMobile = false }: { count?: number; isMobile
         />
       </bufferGeometry>
       <pointsMaterial
-        size={0.02}
+        size={0.03}
         color="#7C3AED"
         transparent
-        opacity={0.6}
+        opacity={0.5}
         sizeAttenuation
       />
     </points>
@@ -167,7 +198,7 @@ export default function FloatingOrb({ className = '' }: FloatingOrbProps) {
   return (
     <div className={`w-full h-full ${className}`}>
       <Canvas
-        camera={{ position: [0, 0, 5], fov: 45 }}
+        camera={{ position: [0, 0, 4.5], fov: 50 }}
         dpr={isMobile ? [1, 1.5] : [1, 2]}
         gl={{ 
           antialias: true, 
@@ -176,13 +207,18 @@ export default function FloatingOrb({ className = '' }: FloatingOrbProps) {
         }}
         style={{ background: 'transparent' }}
       >
-        <ambientLight intensity={0.5} />
-        <directionalLight position={[10, 10, 5]} intensity={1} />
-        <pointLight position={[-10, -10, -5]} color="#06B6D4" intensity={0.5} />
-        <pointLight position={[10, -10, 5]} color="#7C3AED" intensity={0.5} />
+        {/* Lighting setup */}
+        <ambientLight intensity={0.4} />
+        <directionalLight position={[10, 10, 5]} intensity={0.8} />
+        <pointLight position={[-10, -10, -5]} color="#06B6D4" intensity={0.6} />
+        <pointLight position={[10, -10, 5]} color="#7C3AED" intensity={0.6} />
+        <pointLight position={[0, 5, 2]} color="#ffffff" intensity={0.3} />
         
+        {/* Main orb */}
         <OrbMesh isMobile={isMobile} />
-        <Particles count={isMobile ? 0 : 80} isMobile={isMobile} />
+        
+        {/* Background particles */}
+        <Particles count={isMobile ? 0 : 60} isMobile={isMobile} />
       </Canvas>
     </div>
   );

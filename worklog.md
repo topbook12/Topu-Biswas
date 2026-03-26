@@ -1005,3 +1005,72 @@ Build CRUD pages for Files/Documents and Social Links in the Admin Dashboard for
 - Responsive table (files) and card grid (social links)
 - Delete confirmation dialogs
 - Loading states and error handling
+
+---
+## Task ID: Final - Theme & Polish
+### Work Task
+Fix 3D Hero Section clipping, add Dark/Light mode toggle, and create deployment guide for "Topu Biswas" portfolio website.
+
+### Work Summary
+
+**Files Modified/Created:**
+
+1. `/home/z/my-project/src/components/three/FloatingOrb.tsx`
+   - Fixed 3D orb clipping by adjusting camera position and scale
+   - Improved lighting setup with additional point lights
+   - Added animated rings with rotation
+   - Reduced particle count for better performance
+   - Better responsive behavior for mobile devices
+
+2. `/home/z/my-project/src/components/sections/HeroSection.tsx`
+   - Updated 3D canvas container to prevent overflow clipping
+   - Added overflow-visible class for proper 3D rendering
+   - Adjusted decorative ring sizes for better proportions
+
+3. `/home/z/my-project/src/app/globals.css`
+   - Added complete Light theme CSS variables
+   - Dark theme set as default with `.dark` class
+   - Theme-aware glassmorphism effects
+   - Smooth theme transition animations
+   - Light mode background gradients
+
+4. `/home/z/my-project/src/components/providers/ThemeProvider.tsx`
+   - Created ThemeProvider using next-themes
+   - Default dark theme with system preference disabled
+
+5. `/home/z/my-project/src/components/ui/ThemeToggle.tsx`
+   - Animated sun/moon toggle button
+   - Uses useSyncExternalStore for mounted state (no useEffect)
+   - Smooth rotation and scale animations with Framer Motion
+
+6. `/home/z/my-project/src/app/layout.tsx`
+   - Wrapped app with ThemeProvider for theme support
+
+7. `/home/z/my-project/src/components/layout/Navbar.tsx`
+   - Added ThemeToggle button to desktop navigation
+
+8. `/home/z/my-project/src/components/layout/MobileMenu.tsx`
+   - Added ThemeToggle button to mobile menu drawer
+   - Added "Theme" label for clarity
+
+**Design Implementation:**
+- Light theme: Clean white background with subtle grays
+- Dark theme: Premium dark with purple/cyan accents
+- Smooth 0.3s transition between themes
+- Theme persists across page navigation
+- Glassmorphism adapts to current theme
+
+**Technical Details:**
+- next-themes for theme management
+- CSS custom properties for theming
+- Framer Motion for toggle animations
+- useSyncExternalStore to avoid useEffect lint warnings
+- All ESLint checks pass
+
+**Features:**
+- Dark/Light mode toggle in navbar (desktop)
+- Theme toggle in mobile menu
+- Smooth transitions between themes
+- Persistent theme selection
+- Both themes fully styled and polished
+- 3D orb renders correctly without clipping

@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Settings } from 'lucide-react';
 import MobileMenu from './MobileMenu';
+import ThemeToggle from '@/components/ui/ThemeToggle';
 
 const navLinks = [
   { name: 'Home', href: '/' },
@@ -91,7 +92,10 @@ export default function Navbar() {
           </div>
 
           {/* CTA Button & Mobile Menu */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            {/* Theme Toggle */}
+            <ThemeToggle />
+            
             {/* Admin Button */}
             <motion.div
               whileHover={{ scale: 1.05 }}

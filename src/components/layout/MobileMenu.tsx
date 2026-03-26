@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import ThemeToggle from '@/components/ui/ThemeToggle';
 
 interface NavLink {
   name: string;
@@ -173,13 +174,20 @@ export default function MobileMenu({ navLinks, pathname }: MobileMenuProps) {
                   </ul>
                 </nav>
 
-                {/* CTA Button */}
+                {/* Theme Toggle & CTA Button */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.5, duration: 0.3 }}
-                  className="pt-6 border-t border-border"
+                  className="pt-6 border-t border-border space-y-4"
                 >
+                  {/* Theme Toggle Row */}
+                  <div className="flex items-center justify-between px-2">
+                    <span className="text-sm text-muted-foreground">Theme</span>
+                    <ThemeToggle />
+                  </div>
+                  
+                  {/* CTA Button */}
                   <Button
                     asChild
                     className="w-full bg-gradient-to-r from-primary via-secondary to-accent hover:opacity-90 text-white font-medium shadow-lg shadow-primary/25"
