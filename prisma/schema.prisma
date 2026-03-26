@@ -1,16 +1,14 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
+// This is your Prisma schema file
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
-// User model for NextAuth
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -38,9 +36,7 @@ model Account {
   scope             String?
   id_token          String?
   session_state     String?
-
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
   @@unique([provider, providerAccountId])
 }
 
@@ -56,11 +52,9 @@ model VerificationToken {
   identifier String
   token      String   @unique
   expires    DateTime
-
   @@unique([identifier, token])
 }
 
-// Profile Model - Personal Information
 model Profile {
   id              String   @id @default(cuid())
   name            String
@@ -84,19 +78,17 @@ model Profile {
   updatedAt       DateTime @updatedAt
 }
 
-// Skills Model
 model Skill {
   id        String   @id @default(cuid())
   name      String
-  category  String   // frontend, backend, tools, design, devops
-  level     Int      @default(80) // 0-100
+  category  String
+  level     Int      @default(80)
   icon      String?
   order     Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-// Services Model
 model Service {
   id          String   @id @default(cuid())
   title       String
@@ -107,7 +99,6 @@ model Service {
   updatedAt   DateTime @updatedAt
 }
 
-// Projects Model
 model Project {
   id               String   @id @default(cuid())
   title            String
@@ -115,20 +106,19 @@ model Project {
   shortDescription String?
   fullDescription  String?
   thumbnail        String?
-  gallery          String?  // JSON array of image URLs
-  tags             String?  // JSON array of tech stack
+  gallery          String?
+  tags             String?
   category         String?
   featured         Boolean  @default(false)
   liveUrl          String?
   githubUrl        String?
   videoUrl         String?
-  status           String   @default("completed") // completed, in-progress
+  status           String   @default("completed")
   published        Boolean  @default(true)
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 }
 
-// Blog Posts Model
 model Post {
   id         String   @id @default(cuid())
   title      String
@@ -136,17 +126,16 @@ model Post {
   excerpt    String?
   content    String?
   coverImage String?
-  tags       String?  // JSON array of tags
+  tags       String?
   published  Boolean  @default(false)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 }
 
-// Media Links Model (Videos, Tutorials)
 model MediaLink {
   id          String   @id @default(cuid())
   title       String
-  type        String   // youtube, vimeo, facebook, instagram, tiktok, link
+  type        String
   url         String
   thumbnail   String?
   description String?
@@ -156,10 +145,9 @@ model MediaLink {
   updatedAt   DateTime @updatedAt
 }
 
-// Social Links Model
 model SocialLink {
   id        String   @id @default(cuid())
-  platform  String   // github, linkedin, twitter, facebook, instagram, youtube, etc.
+  platform  String
   url       String
   icon      String?
   order     Int      @default(0)
@@ -167,12 +155,11 @@ model SocialLink {
   updatedAt DateTime @updatedAt
 }
 
-// Files/Documents Model
 model FileItem {
   id          String   @id @default(cuid())
   title       String
   fileUrl     String
-  type        String   // pdf, doc, image, etc.
+  type        String
   category    String?
   description String?
   published   Boolean  @default(true)
@@ -180,7 +167,6 @@ model FileItem {
   updatedAt   DateTime @updatedAt
 }
 
-// Contact Messages Model
 model ContactMessage {
   id        String   @id @default(cuid())
   name      String
@@ -191,7 +177,6 @@ model ContactMessage {
   createdAt DateTime @default(now())
 }
 
-// Site Settings Model
 model Setting {
   id        String   @id @default(cuid())
   key       String   @unique

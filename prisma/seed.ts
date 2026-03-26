@@ -1,15 +1,16 @@
+import { hash } from 'bcryptjs';
 import { PrismaClient } from '@prisma/client';
-import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
 async function main() {
   console.log('Starting seed...');
+  console.log('DATABASE_URL:', process.env.DATABASE_URL?.substring(0, 60) + '...');
 
   // Create admin user
   const adminEmail = 'topubiswas.math@gmail.com';
-  const adminPassword = 'admin123456'; // Default password - should be changed after first login
-  const hashedPassword = await bcrypt.hash(adminPassword, 12);
+  const adminPassword = 'admin123456';
+  const hashedPassword = await hash(adminPassword, 12);
 
   // Upsert admin user
   const admin = await prisma.user.upsert({
@@ -26,9 +27,9 @@ async function main() {
     },
   });
 
-  console.log('Admin user created/updated:', admin.email);
+  console.log('✅ Admin user created/updated:', admin.email);
 
-  // Create default profile if it doesn't exist
+  // Create default profile
   const existingProfile = await prisma.profile.findFirst();
   
   if (!existingProfile) {
@@ -38,7 +39,7 @@ async function main() {
         title: 'Full Stack Web Developer',
         heroSubtitle: 'Building Digital Experiences That Matter',
         bioShort: 'I am a passionate Full Stack Web Developer with expertise in modern web technologies.',
-        bioLong: 'I am a passionate Full Stack Web Developer with over 5 years of experience in building modern web applications. I specialize in React, Next.js, Node.js, and various other technologies. I love creating beautiful, performant, and user-friendly applications.',
+        bioLong: 'I am a passionate Full Stack Web Developer with over 5 years of experience in building modern web applications.',
         location: 'Bangladesh',
         email: adminEmail,
         availability: 'Available for freelance work',
@@ -47,10 +48,10 @@ async function main() {
         clientsCount: 30,
       },
     });
-    console.log('Default profile created:', profile.name);
+    console.log('✅ Default profile created:', profile.name);
   }
 
-  // Create some default skills
+  // Create default skills
   const skillsCount = await prisma.skill.count();
   if (skillsCount === 0) {
     const skills = [
@@ -71,39 +72,23 @@ async function main() {
     for (const skill of skills) {
       await prisma.skill.create({ data: skill });
     }
-    console.log('Default skills created');
+    console.log('✅ Default skills created');
   }
 
   // Create default services
   const servicesCount = await prisma.service.count();
   if (servicesCount === 0) {
     const services = [
-      {
-        title: 'Web Development',
-        description: 'Building modern, responsive, and performant web applications using the latest technologies.',
-        icon: 'globe',
-      },
-      {
-        title: 'Frontend Development',
-        description: 'Creating beautiful and interactive user interfaces with React, Next.js, and modern CSS.',
-        icon: 'layout',
-      },
-      {
-        title: 'Backend Development',
-        description: 'Building robust and scalable backend systems with Node.js, Express, and databases.',
-        icon: 'server',
-      },
-      {
-        title: 'API Development',
-        description: 'Designing and implementing RESTful and GraphQL APIs for seamless data communication.',
-        icon: 'code',
-      },
+      { title: 'Web Development', description: 'Building modern, responsive web applications', icon: 'globe' },
+      { title: 'Frontend Development', description: 'Creating beautiful user interfaces', icon: 'layout' },
+      { title: 'Backend Development', description: 'Building robust backend systems', icon: 'server' },
+      { title: 'API Development', description: 'Designing RESTful and GraphQL APIs', icon: 'code' },
     ];
 
     for (const service of services) {
       await prisma.service.create({ data: service });
     }
-    console.log('Default services created');
+    console.log('✅ Default services created');
   }
 
   // Create default social links
@@ -119,11 +104,10 @@ async function main() {
     for (const link of socialLinks) {
       await prisma.socialLink.create({ data: link });
     }
-    console.log('Default social links created');
+    console.log('✅ Default social links created');
   }
 
-  console.log('Seed completed successfully!');
-  console.log('');
+  console.log('\n🎉 Seed completed successfully!\n');
   console.log('=== ADMIN LOGIN CREDENTIALS ===');
   console.log('Email: topubiswas.math@gmail.com');
   console.log('Password: admin123456');

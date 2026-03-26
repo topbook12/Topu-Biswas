@@ -4155,3 +4155,20 @@ Upload error: Error [StorageApiError]: new row violates row-level security polic
  GET / 200 in 352ms (compile: 3ms, render: 349ms)
  POST /api/upload 200 in 661ms (compile: 2ms, render: 659ms)
  GET / 200 in 142ms (compile: 4ms, render: 138ms)
+ GET / 200 in 106ms (compile: 3ms, render: 103ms)
+ GET / 200 in 106ms (compile: 3ms, render: 103ms)
+ GET / 200 in 105ms (compile: 7ms, render: 98ms)
+  Reload env: .env
+ GET / 200 in 85ms (compile: 49ms, render: 36ms)
+  Reload env: .env
+ GET / 200 in 78ms (compile: 50ms, render: 28ms)
+ GET / 200 in 76ms (compile: 50ms, render: 27ms)
+✓ Compiled in 996ms
+ GET / 200 in 91ms (compile: 61ms, render: 30ms)
+⚠ Fast Refresh had to perform a full reload when [turbopack]/browser/dev/hmr-client/hmr-client.ts changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET / 200 in 341ms (compile: 140ms, render: 201ms)
+ GET / 200 in 1181ms (compile: 755ms, render: 427ms)
+ GET / 200 in 1218ms (compile: 807ms, render: 410ms)
+✓ Compiled in 4.4s
+  Reload env: .env
+✓ Compiled in 2.4s
