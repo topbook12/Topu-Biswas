@@ -1,99 +1,44 @@
-// Authentication configuration
+// Authentication configuration - Simple PIN based auth
 import type { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import { db } from '@/lib/db';
-import bcrypt from 'bcryptjs';
 
-// Admin email whitelist
-const ADMIN_EMAILS = [
-  'topubiswas.math@gmail.com',
-];
+// Admin PIN code
+const ADMIN_PIN = '492004';
 
 export const authOptions: NextAuthOptions = {
   session: {
     strategy: 'jwt',
+    maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   providers: [
     CredentialsProvider({
-      name: 'credentials',
+      name: 'pin',
       credentials: {
-        email: { label: 'Email', type: 'email' },
-        password: { label: 'Password', type: 'password' },
+        pin: { label: 'PIN Code', type: 'password' },
       },
       async authorize(credentials) {
         try {
-          console.log('=== Authorize called ===');
-          console.log('Credentials:', JSON.stringify(credentials));
-          
-          if (!credentials?.email || !credentials?.password) {
-            console.log('Missing credentials');
+          console.log('=== PIN Auth ===');
+          console.log('PIN provided:', credentials?.pin);
+
+          if (!credentials?.pin) {
+            console.log('No PIN provided');
             return null;
           }
 
-          // Normalize email
-          const email = credentials.email.toLowerCase().trim();
-          const password = credentials.password;
-          
-          console.log('Normalized email:', email);
-          console.log('Password length:', password.length);
+          const pin = credentials.pin.trim();
 
-          // Check if email is in admin whitelist
-          if (!ADMIN_EMAILS.includes(email)) {
-            console.log('Email not in whitelist:', email);
-            console.log('Whitelist:', ADMIN_EMAILS);
+          if (pin !== ADMIN_PIN) {
+            console.log('Invalid PIN');
             return null;
           }
 
-          // Find user in database
-          console.log('Looking up user in database...');
-          const user = await db.user.findUnique({
-            where: { email: email },
-          });
-          
-          console.log('User found:', user ? { id: user.id, email: user.email, hasPassword: !!user.password } : null);
-
-          // If user doesn't exist, create one (first time login)
-          if (!user) {
-            console.log('Creating new user for:', email);
-            const hashedPassword = await bcrypt.hash(password, 12);
-            const newUser = await db.user.create({
-              data: {
-                email: email,
-                name: 'Topu Biswas',
-                password: hashedPassword,
-                role: 'admin',
-              },
-            });
-            console.log('New user created:', newUser.id);
-            return {
-              id: newUser.id,
-              email: newUser.email,
-              name: newUser.name,
-              role: newUser.role,
-            };
-          }
-
-          // Verify password
-          if (!user.password) {
-            console.log('User has no password set');
-            return null;
-          }
-
-          console.log('Comparing passwords...');
-          const passwordMatch = await bcrypt.compare(password, user.password);
-          console.log('Password match result:', passwordMatch);
-
-          if (!passwordMatch) {
-            console.log('Password mismatch for user:', email);
-            return null;
-          }
-
-          console.log('Login successful for:', email);
+          console.log('PIN verified successfully');
           return {
-            id: user.id,
-            email: user.email,
-            name: user.name,
-            role: user.role,
+            id: 'admin',
+            email: 'admin@topubiswas.com',
+            name: 'Topu Biswas',
+            role: 'admin',
           };
         } catch (error) {
           console.error('Auth error:', error);
@@ -121,7 +66,7 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
   },
-  secret: process.env.NEXTAUTH_SECRET || 'your-super-secret-key-change-in-production',
+  secret: process.env.NEXTAUTH_SECRET || 'topu-biswas-portfolio-secret-key-2024',
   debug: true,
 };
 

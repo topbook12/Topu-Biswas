@@ -3,59 +3,38 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { motion } from 'framer-motion';
-import { Loader2, Mail, Lock, ArrowRight, Sparkles } from 'lucide-react';
+import { Loader2, Lock, ArrowRight, Sparkles, KeyRound } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
 import { toast } from 'sonner';
-
-const loginSchema = z.object({
-  email: z.string().email('Please enter a valid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
-});
-
-type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function AdminLoginPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [pin, setPin] = useState('');
 
-  const form = useForm<LoginFormValues>({
-    resolver: zodResolver(loginSchema),
-    defaultValues: {
-      email: '',
-      password: '',
-    },
-  });
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-  const onSubmit = async (data: LoginFormValues) => {
+    if (!pin) {
+      toast.error('PIN required', {
+        description: 'Please enter your PIN code.',
+      });
+      return;
+    }
+
     setIsLoading(true);
 
     try {
-      // First, clear any existing session cookies
-      await fetch('/api/clear-session', { method: 'POST' });
-
-      // Then sign in with new credentials
       const result = await signIn('credentials', {
-        email: data.email,
-        password: data.password,
+        pin: pin,
         redirect: false,
       });
 
       if (result?.error) {
-        toast.error('Invalid credentials', {
-          description: 'Please check your email and password and try again.',
+        toast.error('Invalid PIN', {
+          description: 'The PIN code you entered is incorrect.',
         });
       } else {
         toast.success('Welcome back!', {
@@ -113,77 +92,50 @@ export default function AdminLoginPage() {
             <p className="text-muted-foreground mt-1">Admin Dashboard</p>
           </motion.div>
 
-          {/* Login Form */}
+          {/* PIN Form */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
           >
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-foreground">Email</FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                          <Input
-                            type="email"
-                            placeholder="admin@example.com"
-                            className="pl-10 bg-input/50 border-border focus:border-primary transition-colors"
-                            {...field}
-                          />
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground flex items-center gap-2">
+                  <KeyRound className="w-4 h-4" />
+                  Enter PIN Code
+                </label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    type="password"
+                    placeholder="••••••"
+                    value={pin}
+                    onChange={(e) => setPin(e.target.value)}
+                    className="pl-10 bg-input/50 border-border focus:border-primary transition-colors text-center text-2xl tracking-[1em] h-12"
+                    maxLength={6}
+                    autoFocus
+                  />
+                </div>
+              </div>
 
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-foreground">Password</FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                          <Input
-                            type="password"
-                            placeholder="••••••••"
-                            className="pl-10 bg-input/50 border-border focus:border-primary transition-colors"
-                            {...field}
-                          />
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <Button
-                  type="submit"
-                  className="w-full bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white font-medium py-5 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl hover:shadow-primary/20 group"
-                  disabled={isLoading}
-                >
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Signing in...
-                    </>
-                  ) : (
-                    <>
-                      Sign In
-                      <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
-                    </>
-                  )}
-                </Button>
-              </form>
-            </Form>
+              <Button
+                type="submit"
+                className="w-full bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white font-medium py-5 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl hover:shadow-primary/20 group"
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Verifying...
+                  </>
+                ) : (
+                  <>
+                    Access Dashboard
+                    <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
+                  </>
+                )}
+              </Button>
+            </form>
           </motion.div>
 
           {/* Footer */}
@@ -193,7 +145,7 @@ export default function AdminLoginPage() {
             transition={{ delay: 0.3 }}
             className="mt-6 text-center text-sm text-muted-foreground"
           >
-            <p>Secure admin access only</p>
+            <p>Secure admin access</p>
           </motion.div>
         </div>
 
